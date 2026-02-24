@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #2D5A27;
+  --color-forest-dark: #1e3d1a;
+  --color-forest-light: #4a8c41;
+  
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  
+  --color-primary: #2D5A27;
+  --color-primary-foreground: #ffffff;
+  
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
+  
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #2D5A27;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-foreground bg-background;
+  }
+}
+
+.glass-header {
+  @apply backdrop-blur-md bg-white/70 border-b border-border;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-forest-dark text-primary-foreground px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-forest/20;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-slate-50 text-forest border border-forest/20 px-8 py-4 rounded-full font-semibold transition-all duration-300;
+}
