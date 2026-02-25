@@ -36,7 +36,9 @@ export function HeroSection() {
 
   useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
-      if (e.buttons === 1) {
+      // On touch devices, buttons might be 0, so we check pointerType or just handle it if it's a move
+      // Actually, for a slider, we usually want to track while the pointer is down
+      if (e.buttons === 1 || e.pointerType === 'touch') {
         updatePosition(e.clientX);
       }
     };
@@ -57,7 +59,7 @@ export function HeroSection() {
   return (
     <section 
       ref={containerRef}
-      className="relative w-full h-screen min-h-[700px] overflow-hidden flex items-center justify-center select-none touch-none"
+      className="relative w-full h-[100svh] min-h-[600px] md:min-h-[700px] overflow-hidden flex items-center justify-center select-none"
       style={{ '--slider-pos': '50%' } as React.CSSProperties}
     >
       {/* Background Slider Layer */}
@@ -107,22 +109,22 @@ export function HeroSection() {
 
         <h1
           className={cn(
-            "fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-5xl font-extrabold tracking-tight text-white delay-100 duration-500 ease-out md:text-7xl lg:text-8xl",
+            "fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-4xl font-extrabold tracking-tight text-white delay-100 duration-500 ease-out sm:text-5xl md:text-7xl lg:text-8xl",
             "leading-[0.9] drop-shadow-2xl"
           )}
         >
           The Perfect Lawn, <br /> <span className="text-forest-light">All Year Round.</span>
         </h1>
 
-        <div className="fade-in slide-in-from-bottom-10 mt-12 flex animate-in flex-row flex-wrap items-center justify-center gap-4 fill-mode-backwards delay-300 duration-500 ease-out">
-          <a href="tel:07495308444">
-            <Button className="rounded-full h-16 px-10 text-lg font-bold shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg" variant="secondary">
+        <div className="fade-in slide-in-from-bottom-10 mt-8 md:mt-12 flex animate-in flex-row flex-wrap items-center justify-center gap-3 md:gap-4 fill-mode-backwards delay-300 duration-500 ease-out">
+          <a href="tel:07495308444" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto rounded-full h-14 md:h-16 px-8 md:px-10 text-base md:text-lg font-bold shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg" variant="secondary">
               <PhoneCallIcon className="size-5 mr-2" />{" "}
               Free Quote
             </Button>
           </a>
-          <a href="#services">
-            <Button className="rounded-full h-16 px-10 text-lg font-bold bg-forest hover:bg-forest-dark border-none shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg">
+          <a href="#services" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto rounded-full h-14 md:h-16 px-8 md:px-10 text-base md:text-lg font-bold bg-forest hover:bg-forest-dark border-none shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg">
               Our Services{" "}
               <ArrowRightIcon className="size-5 ms-2" />
             </Button>
@@ -131,10 +133,10 @@ export function HeroSection() {
       </div>
 
       {/* Bottom Slider Control */}
-      <div className="absolute bottom-12 left-0 right-0 z-40 px-6 flex flex-col items-center gap-4">
+      <div className="absolute bottom-8 md:bottom-12 left-0 right-0 z-40 px-6 flex flex-col items-center gap-3 md:gap-4">
         <div 
           ref={trackRef}
-          className="relative w-full max-w-2xl h-14 bg-transparent cursor-pointer group"
+          className="relative w-full max-w-2xl h-12 md:h-14 bg-transparent cursor-pointer group touch-pan-y"
         >
           {/* Track Labels */}
           <div className="absolute inset-0 flex items-center justify-between px-8 pointer-events-none">
