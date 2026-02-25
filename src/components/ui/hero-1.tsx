@@ -1,90 +1,172 @@
-import { cn } from "@/src/lib/utils";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { cn } from '@/src/lib/utils';
 import { Button } from "@/src/components/ui/button";
 import { 
   ArrowRightIcon, 
   PhoneCallIcon, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Users, 
+  ShieldCheck,
+  Users,
+  CheckCircle2,
   Star,
-  MapPin,
-  Mail,
-  Phone
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 export function HeroSection() {
-	return (
-		<section className="mx-auto w-full max-w-5xl relative">
-			{/* Top Shades */}
-			<div
-				aria-hidden="true"
-				className="absolute inset-0 isolate hidden overflow-hidden contain-strict lg:block"
-			>
-				<div className="absolute inset-0 -top-14 isolate -z-10 bg-[radial-gradient(35%_80%_at_49%_0%,--theme(--color-forest/.08),transparent)] contain-strict" />
-			</div>
+  // Muddy = Before, Green = After
+  const muddyImage = "https://i.postimg.cc/rm5LtKBg/before-pic-lanscaper-1-lead-enhanced.jpg";
+  const greenImage = "https://i.postimg.cc/xT4Fn9Zp/after-pic-lanscaper-1-lead-upscaled.jpg";
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
-			{/* X Bold Faded Borders */}
-			<div
-				aria-hidden="true"
-				className="absolute inset-0 mx-auto hidden min-h-screen w-full max-w-5xl lg:block"
-			>
-				<div className="mask-y-from-80% mask-y-to-100% absolute inset-y-0 left-0 z-10 h-full w-px bg-foreground/15" />
-				<div className="mask-y-from-80% mask-y-to-100% absolute inset-y-0 right-0 z-10 h-full w-px bg-foreground/15" />
-			</div>
+  const updatePosition = useCallback((clientX: number) => {
+    const track = trackRef.current;
+    const container = containerRef.current;
+    if (!track || !container) return;
 
-			<div className="relative flex flex-col items-center justify-center gap-5 pt-32 pb-30">
-				{/* X Content Faded Borders */}
-				<div
-					aria-hidden="true"
-					className="absolute inset-0 -z-1 size-full overflow-hidden"
-				>
-					<div className="absolute inset-y-0 left-4 w-px bg-linear-to-b from-transparent via-border to-border md:left-8" />
-					<div className="absolute inset-y-0 right-4 w-px bg-linear-to-b from-transparent via-border to-border md:right-8" />
-					<div className="absolute inset-y-0 left-8 w-px bg-linear-to-b from-transparent via-border/50 to-border/50 md:left-12" />
-					<div className="absolute inset-y-0 right-8 w-px bg-linear-to-b from-transparent via-border/50 to-border/50 md:right-12" />
-				</div>
+    const rect = track.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const percent = (x / rect.width) * 100;
+    
+    // Direct DOM manipulation for zero-lag performance
+    container.style.setProperty('--slider-pos', `${percent}%`);
+  }, []);
 
-				<div
-					className={cn(
-						"group mx-auto flex w-fit items-center gap-3 rounded-full border bg-card px-3 py-1 shadow",
-						"fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards transition-all delay-500 duration-500 ease-out"
-					)}
-				>
-					<ShieldCheck className="size-3 text-forest" />
-					<span className="text-xs">10-Year Manufacturer Guarantee</span>
-				</div>
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      if (e.buttons === 1) {
+        updatePosition(e.clientX);
+      }
+    };
 
-				<h1
-					className={cn(
-						"fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-4xl tracking-tight delay-100 duration-500 ease-out md:text-5xl lg:text-6xl",
-						"text-shadow-[0_0px_50px_theme(--color-forest/.1)]"
-					)}
-				>
-					The Perfect Lawn, <br /> <span className="text-forest">All Year Round.</span>
-				</h1>
+    const handlePointerDown = (e: PointerEvent) => {
+      updatePosition(e.clientX);
+    };
 
-				<p className="fade-in slide-in-from-bottom-10 mx-auto max-w-xl animate-in fill-mode-backwards text-center text-base text-foreground/80 tracking-wider delay-200 duration-500 ease-out sm:text-lg md:text-xl">
-					No mowing, no mud, no maintenance. <br />
-					Premium artificial grass installation across Brighton & Hove.
-				</p>
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerdown', handlePointerDown);
+    
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [updatePosition]);
 
-				<div className="fade-in slide-in-from-bottom-10 flex animate-in flex-row flex-wrap items-center justify-center gap-3 fill-mode-backwards pt-2 delay-300 duration-500 ease-out">
-					<a href="tel:07495308444">
-						<Button className="rounded-full" size="lg" variant="secondary">
-							<PhoneCallIcon className="size-4 mr-2" />{" "}
-							Get a Free Quote
-						</Button>
-					</a>
-					<a href="#services">
-						<Button className="rounded-full" size="lg">
-							Our Services{" "}
-							<ArrowRightIcon className="size-4 ms-2" />
-						</Button>
-					</a>
-				</div>
-			</div>
-		</section>
-	);
+  return (
+    <section 
+      ref={containerRef}
+      className="relative w-full h-screen min-h-[700px] overflow-hidden flex items-center justify-center select-none touch-none"
+      style={{ '--slider-pos': '50%' } as React.CSSProperties}
+    >
+      {/* Background Slider Layer */}
+      <div className="absolute inset-0 z-0">
+        {/* Before Image (Background) */}
+        <img 
+          src={muddyImage} 
+          alt="Before" 
+          className="absolute inset-0 w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+
+        {/* After Image Overlay */}
+        <div 
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{ clipPath: 'inset(0 0 0 var(--slider-pos))' }}
+        >
+          <img 
+            src={greenImage} 
+            alt="After" 
+            className="absolute inset-0 w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+
+        {/* Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70 z-10" />
+
+        {/* Vertical Divider Line */}
+        <div 
+          className="absolute inset-y-0 z-20 w-px bg-white/40 backdrop-blur-sm pointer-events-none"
+          style={{ left: 'var(--slider-pos)' }}
+        />
+      </div>
+
+      {/* Content Layer */}
+      <div className="relative z-30 max-w-4xl mx-auto px-6 text-center">
+        <div
+          className={cn(
+            "group mx-auto mb-8 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-1.5 text-white shadow-2xl",
+            "fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards transition-all delay-500 duration-500 ease-out"
+          )}
+        >
+          <ShieldCheck className="size-4 text-forest-light" />
+          <span className="text-xs font-semibold uppercase tracking-wider">Sussex's Premier Installers</span>
+        </div>
+
+        <h1
+          className={cn(
+            "fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-5xl font-extrabold tracking-tight text-white delay-100 duration-500 ease-out md:text-7xl lg:text-8xl",
+            "leading-[0.9] drop-shadow-2xl"
+          )}
+        >
+          The Perfect Lawn, <br /> <span className="text-forest-light">All Year Round.</span>
+        </h1>
+
+        <p className="fade-in slide-in-from-bottom-10 mx-auto mt-10 max-w-2xl animate-in fill-mode-backwards text-center text-lg text-white/80 font-medium leading-relaxed delay-200 duration-500 ease-out md:text-xl">
+          No mowing, no mud, no maintenance. <br />
+          Experience the luxury of a maintenance-free garden today.
+        </p>
+
+        <div className="fade-in slide-in-from-bottom-10 mt-12 flex animate-in flex-row flex-wrap items-center justify-center gap-4 fill-mode-backwards delay-300 duration-500 ease-out">
+          <a href="tel:07495308444">
+            <Button className="rounded-full h-16 px-10 text-lg font-bold shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg" variant="secondary">
+              <PhoneCallIcon className="size-5 mr-2" />{" "}
+              Free Quote
+            </Button>
+          </a>
+          <a href="#services">
+            <Button className="rounded-full h-16 px-10 text-lg font-bold bg-forest hover:bg-forest-dark border-none shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg">
+              Our Services{" "}
+              <ArrowRightIcon className="size-5 ms-2" />
+            </Button>
+          </a>
+        </div>
+      </div>
+
+      {/* Bottom Slider Control */}
+      <div className="absolute bottom-12 left-0 right-0 z-40 px-6 flex flex-col items-center gap-4">
+        <div 
+          ref={trackRef}
+          className="relative w-full max-w-2xl h-14 bg-transparent cursor-pointer group"
+        >
+          {/* Track Labels */}
+          <div className="absolute inset-0 flex items-center justify-between px-8 pointer-events-none">
+            <span className="text-[11px] font-bold text-white/80 uppercase tracking-widest drop-shadow-md">Before</span>
+            <span className="text-[11px] font-bold text-white/80 uppercase tracking-widest drop-shadow-md">After</span>
+          </div>
+
+          {/* Slider Handle (Arrows) */}
+          <div 
+            className="absolute top-1/2 w-16 h-11 bg-white rounded-full shadow-2xl flex items-center justify-center border-2 border-forest cursor-ew-resize"
+            style={{ 
+              left: 'var(--slider-pos)',
+              transform: 'translate(-50%, -50%)'
+            }}
+          >
+            <div className="flex items-center gap-0.5 text-forest pointer-events-none">
+              <ChevronLeft className="size-5" />
+              <ChevronRight className="size-5" />
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse">
+          Slide to compare transformation
+        </p>
+      </div>
+    </section>
+  );
 }
 
 export function WhyUsSection() {
@@ -110,7 +192,7 @@ export function WhyUsSection() {
     <section id="why-us" className="py-24 bg-slate-50 relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Why Brighton Homeowners Choose Us</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">Why Brighton Homeowners Choose Us</h2>
           <p className="text-muted-foreground">Transforming gardens into year-round living spaces across Central Sussex.</p>
         </div>
 
@@ -143,7 +225,7 @@ export function ProcessSection() {
   return (
     <section id="process" className="py-24 bg-background">
       <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight">Our Professional Installation Process</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground">Our Professional Installation Process</h2>
         <div className="grid md:grid-cols-5 gap-6">
           {steps.map((step, i) => (
             <div key={i} className="relative group">
@@ -153,7 +235,7 @@ export function ProcessSection() {
                 </span>
                 <div className="h-px bg-border flex-grow md:hidden lg:block"></div>
               </div>
-              <h3 className="font-bold mb-2 text-lg">{step.title}</h3>
+              <h3 className="font-bold mb-2 text-lg text-foreground">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
             </div>
           ))}
@@ -180,7 +262,7 @@ export function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-24 bg-slate-50">
       <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight">Real Feedback from Local Customers</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground">Real Feedback from Local Customers</h2>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {reviews.map((rev, i) => (
             <div key={i} className="bg-background p-10 rounded-3xl shadow-sm border border-border relative">
@@ -193,7 +275,7 @@ export function TestimonialsSection() {
                   {rev.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-bold">{rev.name}</p>
+                  <p className="font-bold text-foreground">{rev.name}</p>
                   <p className="text-xs text-forest font-semibold uppercase tracking-widest">{rev.area}</p>
                 </div>
               </div>
@@ -206,6 +288,16 @@ export function TestimonialsSection() {
 }
 
 export function Footer() {
+  const MapPin = ({ size, className }: { size: number, className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+  );
+  const Mail = ({ size, className }: { size: number, className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+  );
+  const Phone = ({ size, className }: { size: number, className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  );
+
   return (
     <footer className="bg-foreground text-background py-20">
       <div className="max-w-5xl mx-auto px-4">
