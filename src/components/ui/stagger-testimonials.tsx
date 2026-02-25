@@ -172,7 +172,7 @@ export const StaggerTestimonials: React.FC = () => {
         })}
       </div>
 
-      <div className="absolute bottom-20 left-1/2 flex -translate-x-1/2 gap-4 z-20">
+      <div className="absolute bottom-28 left-1/2 flex -translate-x-1/2 gap-4 z-20">
         <button
           onClick={() => handleMove(-1)}
           className={cn(
@@ -197,12 +197,12 @@ export const StaggerTestimonials: React.FC = () => {
         </button>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center z-20">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center z-20 w-full px-6">
         <a 
           href="https://www.google.com/search?sca_esv=b7a78c7db20616cf&sxsrf=ANbL-n40V8KSkDSS2rEM-a1pSeAr9e12RA:1772054116581&si=AL3DRZEsmMGCryMMFSHJ3StBhOdZ2-6yYkXd_doETEE1OR-qOUjhJsdsDPFMJ4Ae32euSHc8t4QkPE7zvWPZZTGkg9KIo_MuvrYah6r7c7mAqQFGgLBp_xBg9lJtHIuTqeDbFsZdqnOXV_P3LHVJJs6anbGVhYPc2Q%3D%3D&q=Artificial+Grass+Brighton+Reviews&sa=X&ved=2ahUKEwis4JCByPWSAxV0U6QEHStUFGIQ0bkNegQINBAH&biw=1536&bih=776&dpr=1.25" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-forest transition-colors"
+          className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-forest transition-colors inline-block"
         >
           Rated 4.9 stars on Google. <span className="underline underline-offset-4">Click here to see our 50+ 5 star ratings</span>
         </a>

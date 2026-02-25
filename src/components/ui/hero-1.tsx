@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion } from 'motion/react';
 import { cn } from '@/src/lib/utils';
 import { Button } from "@/src/components/ui/button";
 import { 
@@ -12,6 +13,108 @@ import {
   ChevronRight
 } from "lucide-react";
 import { StaggerTestimonials } from "./stagger-testimonials";
+
+export function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const links = [
+    { label: 'Services', href: '#services' },
+    { label: 'Process', href: '#process' },
+    { label: 'Why Us', href: '#why-us' },
+    { label: 'Testimonials', href: '#testimonials' },
+  ];
+
+  return (
+    <>
+      <nav className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
+        isScrolled || isMobileMenuOpen ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent"
+      )}>
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img 
+              src="https://i.postimg.cc/Z53zYKNx/lead-landscaper-logo-no-bg.png" 
+              alt="Logo" 
+              className={cn("h-10 w-auto transition-all", isScrolled || isMobileMenuOpen ? "brightness-100" : "brightness-0 invert")}
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          
+          <div className="hidden md:flex items-center gap-8">
+            {links.map((link) => (
+              <a 
+                key={link.label} 
+                href={link.href} 
+                className={cn(
+                  "text-sm font-bold uppercase tracking-widest transition-colors hover:text-forest",
+                  isScrolled ? "text-slate-600" : "text-white"
+                )}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a href="tel:07495308444" className="hidden sm:block">
+              <Button className="rounded-full bg-forest hover:bg-forest-dark text-white border-none px-6">
+                <PhoneCallIcon className="size-4 mr-2" />
+                07495 308444
+              </Button>
+            </a>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={cn(
+                "p-2 rounded-full transition-colors md:hidden",
+                isScrolled || isMobileMenuOpen ? "text-slate-900 hover:bg-slate-100" : "text-white hover:bg-white/10"
+              )}
+            >
+              {isMobileMenuOpen ? (
+                <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              ) : (
+                <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      <div className={cn(
+        "fixed inset-0 z-40 bg-white transition-all duration-500 md:hidden",
+        isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
+      )}>
+        <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
+          {links.map((link) => (
+            <a 
+              key={link.label} 
+              href={link.href} 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-2xl font-bold text-slate-900 uppercase tracking-widest hover:text-forest transition-colors"
+            >
+              {link.label}
+            </a>
+          ))}
+          <a href="tel:07495308444" className="w-full">
+            <Button className="w-full rounded-full h-16 text-lg font-bold bg-forest hover:bg-forest-dark text-white border-none">
+              <PhoneCallIcon className="size-5 mr-2" />
+              Call 07495 308444
+            </Button>
+          </a>
+        </div>
+      </div>
+    </>
+  );
+}
 
 export function HeroSection() {
   // Muddy = Before, Green = After
@@ -189,21 +292,31 @@ export function WhyUsSection() {
   return (
     <section id="why-us" className="py-24 bg-slate-50 relative overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
           <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">Why Brighton Homeowners Choose Us</h2>
           <p className="text-muted-foreground">Transforming gardens into year-round living spaces across Central Sussex.</p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {cards.map((card, i) => (
-            <div 
+            <motion.div 
               key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
               className="bg-background p-8 rounded-3xl shadow-sm border border-border hover:shadow-md transition-all duration-300"
             >
               <div className="mb-6 bg-forest/5 w-16 h-16 rounded-2xl flex items-center justify-center">{card.icon}</div>
               <h3 className="text-xl font-bold mb-4">{card.title}</h3>
               <p className="text-muted-foreground leading-relaxed">{card.desc}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -223,19 +336,38 @@ export function ProcessSection() {
   return (
     <section id="process" className="py-24 bg-background">
       <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground">Our Professional Installation Process</h2>
-        <div className="grid md:grid-cols-5 gap-6">
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground"
+        >
+          Our Professional Installation Process
+        </motion.h2>
+        <div className="grid md:grid-cols-5 gap-8 md:gap-6">
           {steps.map((step, i) => (
-            <div key={i} className="relative group">
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="relative group"
+            >
               <div className="mb-4 flex items-center gap-4">
-                <span className="flex-shrink-0 w-10 h-10 bg-forest text-white rounded-full flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-110 transition-transform">
+                <span className="flex-shrink-0 w-10 h-10 bg-forest text-white rounded-full flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-110 transition-transform z-10">
                   {i + 1}
                 </span>
-                <div className="h-px bg-border flex-grow md:hidden lg:block"></div>
+                <div className="hidden md:block h-px bg-border flex-grow"></div>
               </div>
               <h3 className="font-bold mb-2 text-lg text-foreground">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
-            </div>
+              
+              {/* Mobile vertical line */}
+              {i < steps.length - 1 && (
+                <div className="absolute left-5 top-10 bottom-[-32px] w-px bg-border md:hidden"></div>
+              )}
+            </motion.div>
           ))}
         </div>
       </div>
@@ -282,6 +414,14 @@ export function Footer() {
             <p className="text-background/60 leading-relaxed mb-8">
               Sussex's leading specialists in premium artificial lawn installation. Proudly serving Brighton, Hove, Worthing, and Haywards Heath.
             </p>
+            <div className="flex items-center gap-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-background/5 flex items-center justify-center hover:bg-forest transition-colors">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-background/5 flex items-center justify-center hover:bg-forest transition-colors">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </a>
+            </div>
           </div>
           
           <div>
