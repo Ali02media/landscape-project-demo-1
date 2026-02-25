@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+import { StaggerTestimonials } from "./stagger-testimonials";
 
 export function HeroSection() {
   // Muddy = Before, Green = After
@@ -112,11 +113,6 @@ export function HeroSection() {
         >
           The Perfect Lawn, <br /> <span className="text-forest-light">All Year Round.</span>
         </h1>
-
-        <p className="fade-in slide-in-from-bottom-10 mx-auto mt-10 max-w-2xl animate-in fill-mode-backwards text-center text-lg text-white/80 font-medium leading-relaxed delay-200 duration-500 ease-out md:text-xl">
-          No mowing, no mud, no maintenance. <br />
-          Experience the luxury of a maintenance-free garden today.
-        </p>
 
         <div className="fade-in slide-in-from-bottom-10 mt-12 flex animate-in flex-row flex-wrap items-center justify-center gap-4 fill-mode-backwards delay-300 duration-500 ease-out">
           <a href="tel:07495308444">
@@ -246,42 +242,14 @@ export function ProcessSection() {
 }
 
 export function TestimonialsSection() {
-  const reviews = [
-    { 
-      name: "Sally Hill", 
-      area: "Hove", 
-      text: "We have a lower ground flat with a small garden that we wanted tidying up. A lot of the other companies did not want to take the job on, but Mark and Anthony did a splendid job and were cheerful and very helpful." 
-    },
-    { 
-      name: "Zak Donnelly", 
-      area: "Brighton", 
-      text: "Artificial Grass Brighton did a terrific job laying our new lawn and tidying up the back garden. Very pleased with the results" 
-    }
-  ];
-
   return (
-    <section id="testimonials" className="py-24 bg-slate-50">
-      <div className="max-w-5xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground">Real Feedback from Local Customers</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {reviews.map((rev, i) => (
-            <div key={i} className="bg-background p-10 rounded-3xl shadow-sm border border-border relative">
-              <div className="flex gap-1 mb-6">
-                {[...Array(5)].map((_, i) => <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />)}
-              </div>
-              <p className="text-foreground/90 italic mb-8 text-lg leading-relaxed">"{rev.text}"</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-forest/10 rounded-full flex items-center justify-center text-forest font-bold">
-                  {rev.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="font-bold text-foreground">{rev.name}</p>
-                  <p className="text-xs text-forest font-semibold uppercase tracking-widest">{rev.area}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <section id="testimonials" className="py-24 bg-slate-50 overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4 mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-center tracking-tight text-foreground">Real Feedback from Local Customers</h2>
+        <p className="text-center text-muted-foreground mt-4">See why Brighton homeowners trust us with their gardens.</p>
+      </div>
+      <div className="relative">
+        <StaggerTestimonials />
       </div>
     </section>
   );
