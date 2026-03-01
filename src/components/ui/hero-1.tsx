@@ -27,48 +27,50 @@ export function Navbar() {
   }, []);
 
   const links = [
-    { label: 'Services', href: '#services' },
     { label: 'Process', href: '#process' },
+    { label: 'Transformations', href: '#transformations' },
     { label: 'Why Us', href: '#why-us' },
     { label: 'Testimonials', href: '#testimonials' },
+    { label: 'Contact', href: '#contact' },
   ];
 
   return (
     <>
       <nav className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4",
-        isScrolled || isMobileMenuOpen ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-6",
+        isScrolled || isMobileMenuOpen ? "bg-white/80 backdrop-blur-2xl shadow-[0_1px_0_0_rgba(0,0,0,0.05)] py-4" : "bg-transparent"
       )}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 satisfying-click">
             <img 
               src="https://i.postimg.cc/Z53zYKNx/lead-landscaper-logo-no-bg.png" 
               alt="Logo" 
-              className={cn("h-10 w-auto transition-all", isScrolled || isMobileMenuOpen ? "brightness-100" : "brightness-0 invert")}
+              className={cn("h-12 w-auto transition-all duration-500", isScrolled || isMobileMenuOpen ? "brightness-100" : "brightness-0 invert")}
               referrerPolicy="no-referrer"
             />
           </div>
           
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {links.map((link) => (
               <a 
                 key={link.label} 
                 href={link.href} 
                 className={cn(
-                  "text-sm font-bold uppercase tracking-widest transition-colors hover:text-forest",
+                  "text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:text-forest relative group",
                   isScrolled ? "text-slate-600" : "text-white"
                 )}
               >
                 {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-forest transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <a href="tel:07495308444" className="hidden sm:block">
-              <Button className="rounded-full bg-forest hover:bg-forest-dark text-white border-none px-6">
+          <div className="flex items-center gap-4">
+            <a href="#contact" className="hidden sm:block satisfying-click">
+              <Button className="rounded-full bg-forest hover:bg-forest-dark text-white border-none px-8 h-12 text-sm font-bold tracking-wider shadow-lg">
                 <PhoneCallIcon className="size-4 mr-2" />
-                07495 308444
+                Book Survey
               </Button>
             </a>
             <button 
@@ -104,14 +106,31 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <a href="tel:07495308444" className="w-full">
+          <a href="#contact" className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
             <Button className="w-full rounded-full h-16 text-lg font-bold bg-forest hover:bg-forest-dark text-white border-none">
               <PhoneCallIcon className="size-5 mr-2" />
-              Call 07495 308444
+              Book Free Survey
             </Button>
           </a>
         </div>
       </div>
+
+      {/* Floating CTA Button */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{ 
+          opacity: isScrolled ? 1 : 0, 
+          scale: isScrolled ? 1 : 0.8,
+          y: isScrolled ? 0 : 20
+        }}
+        className="fixed bottom-8 right-8 z-50 pointer-events-auto sm:hidden"
+      >
+        <a href="#contact">
+          <Button className="rounded-full w-16 h-16 bg-forest text-white shadow-2xl border-none flex items-center justify-center p-0">
+            <PhoneCallIcon className="size-6" />
+          </Button>
+        </a>
+      </motion.div>
     </>
   );
 }
@@ -137,27 +156,24 @@ export function HeroSection() {
     container.style.setProperty('--slider-pos', `${percent}%`);
   }, []);
 
-  useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      // On touch devices, buttons might be 0, so we check pointerType or just handle it if it's a move
-      // Actually, for a slider, we usually want to track while the pointer is down
-      if (e.buttons === 1 || e.pointerType === 'touch') {
-        updatePosition(e.clientX);
-      }
-    };
+  const [isDragging, setIsDragging] = useState(false);
 
-    const handlePointerDown = (e: PointerEvent) => {
+  const onPointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    updatePosition(e.clientX);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (isDragging) {
       updatePosition(e.clientX);
-    };
+    }
+  };
 
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerdown', handlePointerDown);
-    
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerdown', handlePointerDown);
-    };
-  }, [updatePosition]);
+  const onPointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  };
 
   return (
     <section 
@@ -188,8 +204,8 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Gradient Overlay for Readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70 z-10" />
+        {/* Gradient Overlay for Readability - Darkened for better contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 z-10" />
 
         {/* Vertical Divider Line */}
         <div 
@@ -202,34 +218,38 @@ export function HeroSection() {
       <div className="relative z-30 max-w-4xl mx-auto px-6 text-center">
         <div
           className={cn(
-            "group mx-auto mb-8 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl px-4 py-1.5 text-white shadow-2xl",
+            "group mx-auto mb-8 flex w-fit items-center gap-3 rounded-full border border-white/20 bg-black/20 backdrop-blur-xl px-4 py-1.5 text-white shadow-2xl",
             "fade-in slide-in-from-bottom-10 animate-in fill-mode-backwards transition-all delay-500 duration-500 ease-out"
           )}
         >
           <ShieldCheck className="size-4 text-forest-light" />
-          <span className="text-xs font-semibold uppercase tracking-wider">Sussex's Premier Installers</span>
+          <span className="text-xs font-semibold uppercase tracking-wider drop-shadow-sm">Local & Family Run Sussex Installers</span>
         </div>
 
         <h1
           className={cn(
-            "fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-4xl font-extrabold tracking-tight text-white delay-100 duration-500 ease-out sm:text-5xl md:text-7xl lg:text-8xl",
-            "leading-[0.9] drop-shadow-2xl"
+            "fade-in slide-in-from-bottom-10 animate-in text-balance fill-mode-backwards text-center text-4xl font-bold tracking-tight text-white delay-100 duration-1000 ease-out sm:text-5xl md:text-6xl lg:text-7xl",
+            "leading-[0.9] font-display"
           )}
+          style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
         >
-          The Perfect Lawn, <br /> <span className="text-forest-light">All Year Round.</span>
+          The Perfect Lawn, <br /> 
+          <span className="relative inline-block">
+            <span className="relative z-10 text-white">All Year Round.</span>
+            <motion.span 
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 1.5, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute bottom-1 left-0 h-[0.1em] w-full bg-forest-light/60 origin-left -z-0"
+            />
+          </span>
         </h1>
 
-        <div className="fade-in slide-in-from-bottom-10 mt-8 md:mt-12 flex animate-in flex-row flex-wrap items-center justify-center gap-3 md:gap-4 fill-mode-backwards delay-300 duration-500 ease-out">
-          <a href="tel:07495308444" className="w-full sm:w-auto">
-            <Button className="w-full sm:w-auto rounded-full h-14 md:h-16 px-8 md:px-10 text-base md:text-lg font-bold shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg" variant="secondary">
+        <div className="fade-in slide-in-from-bottom-10 mt-8 md:mt-10 flex animate-in flex-row flex-wrap items-center justify-center gap-4 md:gap-6 fill-mode-backwards delay-300 duration-700 ease-out">
+          <a href="#contact" className="w-full sm:w-auto satisfying-click">
+            <Button className="w-full sm:w-auto rounded-full h-14 md:h-16 px-8 md:px-10 text-base md:text-lg font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 bg-white text-forest hover:bg-slate-50 border-none" size="lg">
               <PhoneCallIcon className="size-5 mr-2" />{" "}
-              Free Quote
-            </Button>
-          </a>
-          <a href="#services" className="w-full sm:w-auto">
-            <Button className="w-full sm:w-auto rounded-full h-14 md:h-16 px-8 md:px-10 text-base md:text-lg font-bold bg-forest hover:bg-forest-dark border-none shadow-2xl transition-all hover:scale-105 active:scale-95" size="lg">
-              Our Services{" "}
-              <ArrowRightIcon className="size-5 ms-2" />
+              Request Free Survey
             </Button>
           </a>
         </div>
@@ -239,6 +259,10 @@ export function HeroSection() {
       <div className="absolute bottom-8 md:bottom-12 left-0 right-0 z-40 px-6 flex flex-col items-center gap-3 md:gap-4">
         <div 
           ref={trackRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           className="relative w-full max-w-2xl h-12 md:h-14 bg-transparent cursor-pointer group touch-pan-y"
         >
           {/* Track Labels */}
@@ -274,53 +298,76 @@ export function WhyUsSection() {
   const cards = [
     {
       icon: <Users className="w-8 h-8 text-forest" />,
-      title: "Pet & Child Friendly",
-      desc: "Latest tufting technology with shock-absorption pads. Non-toxic, easy to clean, and completely mud-free."
+      title: "Pet, Child & School Friendly",
+      desc: "Latest tufting technology with shock-absorption pads. Non-toxic, easy to clean, and completely mud-free. Perfect for homes, schools, and nurseries."
     },
     {
       icon: <ShieldCheck className="w-8 h-8 text-forest" />,
-      title: "10-Year Guarantee",
-      desc: "We only use premium, European-manufactured grass with a 10-year UV warranty. Over 15 realistic varieties."
+      title: "10-Year Guarantee & 15+ Varieties",
+      desc: "We only use premium, European-manufactured grass with a 10-year UV warranty. Choose from over 15 realistic varieties to satisfy any taste."
     },
     {
       icon: <CheckCircle2 className="w-8 h-8 text-forest" />,
-      title: "Expert Installation",
-      desc: "Our local Sussex team handles everything from deep base preparation to precision edge fixing."
+      title: "Expert Fitting & Low Maintenance",
+      desc: "Our local Sussex team handles everything. The ultimate solution to low maintenance gardening—just hose it down and take back your weekends."
     }
   ];
 
   return (
-    <section id="why-us" className="py-24 bg-slate-50 relative overflow-hidden">
-      <div className="max-w-5xl mx-auto px-4 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">Why Brighton Homeowners Choose Us</h2>
-          <p className="text-muted-foreground">Transforming gardens into year-round living spaces across Central Sussex.</p>
-        </motion.div>
+    <>
+      <section id="why-us" className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-2xl mx-auto mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-foreground">Why Brighton Homeowners Choose Us</h2>
+            <p className="text-muted-foreground">Transforming gardens into year-round living spaces across Central Sussex.</p>
+          </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {cards.map((card, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-background p-8 rounded-3xl shadow-sm border border-border hover:shadow-md transition-all duration-300"
-            >
-              <div className="mb-6 bg-forest/5 w-16 h-16 rounded-2xl flex items-center justify-center">{card.icon}</div>
-              <h3 className="text-xl font-bold mb-4">{card.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{card.desc}</p>
-            </motion.div>
-          ))}
+          <div className="grid md:grid-cols-3 gap-10 lg:gap-12">
+            {cards.map((card, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="premium-card p-10 group"
+              >
+                <div className="mb-8 bg-forest/5 w-20 h-20 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500 text-forest">{card.icon}</div>
+                <h3 className="text-2xl font-bold mb-5 leading-tight">{card.title}</h3>
+                <p className="text-muted-foreground leading-relaxed text-lg">{card.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Section CTA 1 */}
+      <section className="py-20 bg-forest text-white overflow-hidden relative">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.1 }}
+          className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"
+        />
+        <div className="max-w-5xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+          <div className="text-center md:text-left max-w-xl">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">Ready to transform your garden?</h3>
+            <p className="text-white/70 text-lg">Get a free, no-obligation quote in under 24 hours. No pressure, just expert advice.</p>
+          </div>
+          <a href="#contact" className="satisfying-click">
+            <Button className="rounded-full h-16 md:h-20 px-10 md:px-14 text-xl font-bold bg-white text-forest hover:bg-slate-50 border-none shadow-2xl">
+              <PhoneCallIcon className="size-6 mr-3" />
+              Book Free Survey
+            </Button>
+          </a>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -334,39 +381,180 @@ export function ProcessSection() {
   ];
 
   return (
-    <section id="process" className="py-24 bg-background">
-      <div className="max-w-5xl mx-auto px-4">
-        <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground"
+    <>
+      <section id="process" className="py-24 bg-background">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-center mb-16 tracking-tight text-foreground"
+          >
+            Our Professional Installation Process
+          </motion.h2>
+          <div className="grid md:grid-cols-5 gap-10 md:gap-8">
+            {steps.map((step, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                className="relative group"
+              >
+                <div className="mb-6 flex items-center gap-4">
+                  <span className="flex-shrink-0 w-12 h-12 bg-forest text-white rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 z-10">
+                    {i + 1}
+                  </span>
+                  <div className="hidden md:block h-px bg-border/50 flex-grow"></div>
+                </div>
+                <h3 className="font-bold mb-3 text-xl leading-tight">{step.title}</h3>
+                <p className="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
+                
+                {/* Mobile vertical line */}
+                {i < steps.length - 1 && (
+                  <div className="absolute left-6 top-12 bottom-[-40px] w-px bg-border/50 md:hidden"></div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section CTA 2 */}
+      <section className="py-24 bg-slate-50 border-y border-slate-200/50 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+          <h3 className="text-4xl md:text-5xl font-bold mb-8 leading-tight tracking-tighter">Sussex's Premier Artificial Grass Installers</h3>
+          <p className="text-muted-foreground text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
+            We've transformed over 500 gardens in Brighton & Hove. Let us handle the hard work while you enjoy a perfect lawn all year round.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <a href="#contact" className="w-full sm:w-auto satisfying-click">
+              <Button className="w-full sm:w-auto rounded-full h-16 md:h-20 px-12 text-xl font-bold bg-forest hover:bg-forest-dark text-white shadow-2xl">
+                <PhoneCallIcon className="size-6 mr-3" />
+                Book Free Survey
+              </Button>
+            </a>
+            <div className="flex items-center gap-3 text-sm font-bold text-forest uppercase tracking-[0.2em]">
+              <CheckCircle2 className="size-6" />
+              Free Site Survey
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
+export function ComparisonSlider({ before, after, label }: { before: string, after: string, label?: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [percent, setPercent] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const updatePosition = (clientX: number) => {
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    setPercent((x / rect.width) * 100);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    updatePosition(e.clientX);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (isDragging) updatePosition(e.clientX);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {label && <h4 className="text-lg font-bold text-center text-slate-700">{label}</h4>}
+      <div 
+        ref={containerRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        className="relative aspect-[4/3] w-full rounded-3xl overflow-hidden cursor-ew-resize select-none shadow-xl border border-slate-200 touch-none"
+      >
+        <img src={before} alt="Before" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
+        <div 
+          className="absolute inset-0 w-full h-full overflow-hidden"
+          style={{ clipPath: `inset(0 0 0 ${percent}%)` }}
         >
-          Our Professional Installation Process
-        </motion.h2>
-        <div className="grid md:grid-cols-5 gap-8 md:gap-6">
-          {steps.map((step, i) => (
-            <motion.div 
+          <img src={after} alt="After" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
+        </div>
+        
+        {/* Divider */}
+        <div 
+          className="absolute inset-y-0 w-1 bg-white/50 backdrop-blur-md z-10"
+          style={{ left: `${percent}%`, transform: 'translateX(-50%)' }}
+        >
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-[0_0_30px_rgba(0,0,0,0.2)] flex items-center justify-center border-2 border-forest group-hover:scale-110 transition-transform duration-300">
+            <div className="flex items-center gap-0.5 text-forest">
+              <ChevronLeft className="size-5" />
+              <ChevronRight className="size-5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Labels */}
+        <div className="absolute bottom-6 left-6 z-20 bg-black/30 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-bold text-white uppercase tracking-[0.2em] border border-white/10">Before</div>
+        <div className="absolute bottom-6 right-6 z-20 bg-forest/60 backdrop-blur-xl px-4 py-1.5 rounded-full text-[11px] font-bold text-white uppercase tracking-[0.2em] border border-white/10">After</div>
+      </div>
+    </div>
+  );
+}
+
+export function TransformationsSection() {
+  const transformations = [
+    {
+      before: "https://i.postimg.cc/k57Y39jz/landscpaer-demo-before-pic-2.webp",
+      after: "https://i.postimg.cc/B6kdGkP2/landscaper-demo-after-pic-2.webp"
+    },
+    {
+      before: "https://i.postimg.cc/nVqdzC6S/before-pic-landscaper-demo-2.jpg",
+      after: "https://i.postimg.cc/pXxsnPvJ/after-pic-landscaper-demo-2.jpg"
+    },
+    {
+      before: "https://i.postimg.cc/Sx9jFbXC/before-pic-3-landscaper-demo.jpg",
+      after: "https://i.postimg.cc/KvRRfMmv/after-pic-3-landscaper-demo.jpg"
+    }
+  ];
+
+  return (
+    <section id="transformations" className="py-32 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Garden Transformations</h2>
+            <p className="text-xl text-muted-foreground leading-relaxed">Slide to see the difference our premium artificial grass makes. From muddy patches to pristine living spaces.</p>
+          </motion.div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-10 lg:gap-14">
+          {transformations.map((t, i) => (
+            <motion.div
               key={i}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="relative group"
+              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="mb-4 flex items-center gap-4">
-                <span className="flex-shrink-0 w-10 h-10 bg-forest text-white rounded-full flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-110 transition-transform z-10">
-                  {i + 1}
-                </span>
-                <div className="hidden md:block h-px bg-border flex-grow"></div>
-              </div>
-              <h3 className="font-bold mb-2 text-lg text-foreground">{step.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
-              
-              {/* Mobile vertical line */}
-              {i < steps.length - 1 && (
-                <div className="absolute left-5 top-10 bottom-[-32px] w-px bg-border md:hidden"></div>
-              )}
+              <ComparisonSlider {...t} />
             </motion.div>
           ))}
         </div>
@@ -377,13 +565,179 @@ export function ProcessSection() {
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="py-24 bg-slate-50 overflow-hidden">
-      <div className="max-w-5xl mx-auto px-4 mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold text-center tracking-tight text-foreground">Real Feedback from Local Customers</h2>
-        <p className="text-center text-muted-foreground mt-4">See why Brighton homeowners trust us with their gardens.</p>
+    <section id="testimonials" className="py-32 bg-slate-50/50 overflow-hidden relative">
+      <div className="max-w-5xl mx-auto px-4 mb-20 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-6">Real Feedback from Local Customers</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">See why Brighton homeowners trust us with their gardens. Professionalism and quality in every stitch.</p>
+        </motion.div>
       </div>
       <div className="relative">
         <StaggerTestimonials />
+      </div>
+    </section>
+  );
+}
+
+export function ContactSection() {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('loading');
+    // Simulate API call
+    setTimeout(() => {
+      setStatus('success');
+    }, 1500);
+  };
+
+  return (
+    <section id="contact" className="py-24 bg-white relative overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4 relative z-10">
+        <div className="grid md:grid-cols-2 gap-16 items-start">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">Book Your Free Site Survey</h2>
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                Ready to transform your outdoor space? Fill out the form below and one of our experts will be in touch within 24 hours to arrange a free, no-obligation site survey and quote.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-forest/5 flex items-center justify-center text-forest">
+                    <PhoneCallIcon className="size-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wider text-slate-400">Call Us Directly</p>
+                    <a href="tel:07495308444" className="text-xl font-bold hover:text-forest transition-colors">07495 308444</a>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-forest/5 flex items-center justify-center text-forest">
+                    <ShieldCheck className="size-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wider text-slate-400">Our Guarantee</p>
+                    <p className="font-bold">10-Year UV Warranty on all installations</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="bg-white p-10 md:p-14 rounded-[2.5rem] border border-slate-200/60 shadow-[0_30px_60px_rgba(0,0,0,0.05)]"
+          >
+            {status === 'success' ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-forest rounded-full flex items-center justify-center text-white mx-auto mb-6">
+                  <CheckCircle2 className="size-10" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
+                <p className="text-muted-foreground">Your request has been received. We'll be in touch shortly.</p>
+                <Button 
+                  onClick={() => setStatus('idle')}
+                  variant="outline" 
+                  className="mt-8 rounded-full"
+                >
+                  Send Another Message
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="firstName" className="text-xs font-bold uppercase tracking-wider text-slate-500">First Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      id="firstName"
+                      placeholder="John"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="lastName" className="text-xs font-bold uppercase tracking-wider text-slate-500">Last Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      id="lastName"
+                      placeholder="Doe"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-slate-500">Email Address</label>
+                  <input 
+                    required
+                    type="email" 
+                    id="email"
+                    placeholder="john@example.com"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-slate-500">Phone Number</label>
+                  <input 
+                    required
+                    type="tel" 
+                    id="phone"
+                    placeholder="07123 456789"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-slate-500">Your Message</label>
+                  <textarea 
+                    required
+                    id="message"
+                    rows={4}
+                    placeholder="Tell us about your project..."
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-forest/20 focus:border-forest transition-all resize-none"
+                  ></textarea>
+                </div>
+
+                <div className="flex items-center gap-3 p-4 bg-forest/5 rounded-xl border border-forest/10">
+                  <input 
+                    type="checkbox" 
+                    id="freeSamples" 
+                    className="size-5 rounded border-slate-300 text-forest focus:ring-forest"
+                  />
+                  <label htmlFor="freeSamples" className="text-sm font-medium text-slate-700 cursor-pointer">
+                    Yes, please bring <span className="font-bold text-forest underline">FREE grass samples</span> to my survey!
+                  </label>
+                </div>
+
+                <Button 
+                  disabled={status === 'loading'}
+                  type="submit" 
+                  className="w-full rounded-full h-16 md:h-20 text-xl font-bold bg-forest hover:bg-forest-dark text-white border-none shadow-2xl mt-8 satisfying-click"
+                >
+                  {status === 'loading' ? "Sending..." : "Request Free Survey"}
+                </Button>
+              </form>
+            )}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
