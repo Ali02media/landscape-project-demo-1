@@ -28,10 +28,8 @@ export function Navbar() {
 
   const links = [
     { label: 'Process', href: '#process' },
-    { label: 'Transformations', href: '#transformations' },
+    { label: 'Gallery', href: '#transformations' },
     { label: 'Why Us', href: '#why-us' },
-    { label: 'Testimonials', href: '#testimonials' },
-    { label: 'Contact', href: '#contact' },
   ];
 
   return (
@@ -45,7 +43,7 @@ export function Navbar() {
             <img 
               src="https://i.postimg.cc/Z53zYKNx/lead-landscaper-logo-no-bg.png" 
               alt="Logo" 
-              className={cn("h-12 w-auto transition-all duration-500", isScrolled || isMobileMenuOpen ? "brightness-100" : "brightness-0 invert")}
+              className={cn("h-10 w-auto transition-all duration-500", isScrolled || isMobileMenuOpen ? "brightness-100" : "brightness-0 invert")}
               referrerPolicy="no-referrer"
             />
           </div>
@@ -152,8 +150,10 @@ export function HeroSection() {
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
     const percent = (x / rect.width) * 100;
     
-    // Direct DOM manipulation for zero-lag performance
-    container.style.setProperty('--slider-pos', `${percent}%`);
+    // Use requestAnimationFrame for smoother updates
+    requestAnimationFrame(() => {
+      container.style.setProperty('--slider-pos', `${percent}%`);
+    });
   }, []);
 
   const [isDragging, setIsDragging] = useState(false);
@@ -193,7 +193,7 @@ export function HeroSection() {
 
         {/* After Image Overlay */}
         <div 
-          className="absolute inset-0 w-full h-full overflow-hidden"
+          className="absolute inset-0 w-full h-full overflow-hidden will-change-[clip-path]"
           style={{ clipPath: 'inset(0 0 0 var(--slider-pos))' }}
         >
           <img 
@@ -205,11 +205,11 @@ export function HeroSection() {
         </div>
 
         {/* Gradient Overlay for Readability - Darkened for better contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80 z-10 pointer-events-none" />
 
         {/* Vertical Divider Line */}
         <div 
-          className="absolute inset-y-0 z-20 w-px bg-white/40 backdrop-blur-sm pointer-events-none"
+          className="absolute inset-y-0 z-20 w-px bg-white/40 backdrop-blur-sm pointer-events-none will-change-transform"
           style={{ left: 'var(--slider-pos)' }}
         />
       </div>
@@ -456,7 +456,11 @@ export function ComparisonSlider({ before, after, label }: { before: string, aft
     if (!container) return;
     const rect = container.getBoundingClientRect();
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setPercent((x / rect.width) * 100);
+    const newPercent = (x / rect.width) * 100;
+    
+    requestAnimationFrame(() => {
+      setPercent(newPercent);
+    });
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -487,7 +491,7 @@ export function ComparisonSlider({ before, after, label }: { before: string, aft
       >
         <img src={before} alt="Before" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
         <div 
-          className="absolute inset-0 w-full h-full overflow-hidden"
+          className="absolute inset-0 w-full h-full overflow-hidden will-change-[clip-path]"
           style={{ clipPath: `inset(0 0 0 ${percent}%)` }}
         >
           <img src={after} alt="After" className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -495,7 +499,7 @@ export function ComparisonSlider({ before, after, label }: { before: string, aft
         
         {/* Divider */}
         <div 
-          className="absolute inset-y-0 w-1 bg-white/50 backdrop-blur-md z-10"
+          className="absolute inset-y-0 w-1 bg-white/50 backdrop-blur-md z-10 will-change-transform"
           style={{ left: `${percent}%`, transform: 'translateX(-50%)' }}
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-[0_0_30px_rgba(0,0,0,0.2)] flex items-center justify-center border-2 border-forest group-hover:scale-110 transition-transform duration-300">
